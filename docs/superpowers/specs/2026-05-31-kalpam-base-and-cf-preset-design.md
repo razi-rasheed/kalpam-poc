@@ -77,7 +77,7 @@ rozomod/kalpam  (unified-versioned)
 
 **CI / release / deploy** — a single `release.yml` with two jobs: a `release` job runs semantic-release; a `deploy` job `needs: release`, gated on `needs.release.outputs.released == 'true'`, checks out the new tag and runs `cloudflare/wrangler-action@v4` (`wrangler deploy` + `wrangler d1 migrations apply --remote`). A `GITHUB_TOKEN`-created release fires neither `on: release` nor `on: push: tags` (GitHub anti-recursion), so the job-dependency pattern is required. A separate `ci.yml` runs on PRs: install · lint · typecheck · test (workers pool) · build.
 
-**OTA wiring:** the preset is a Copier template; the seeded `.copier-answers.yml` (`_src_path: gh:rozomod/kalpam`, `_commit: v0.1.0`) plus the `@rozomod/*` dev-deps make it fully updatable. The consumer `renovate.json` extends `github>rozomod/kalpam#v0.1.0` with `enabledManagers: ["npm","github-actions","nvm","copier","regex"]`.
+**OTA wiring:** the preset is a Copier template; the seeded `.copier-answers.yml` (`_src_path: gh:rozomod/kalpam`, `_commit: v0.1.0`) plus the `@rozomod/*` dev-deps make it fully updatable. The consumer `renovate.json` extends `github>rozomod/kalpam#v0.1.0` with `enabledManagers: ["npm","github-actions","nvm","copier","custom.regex"]` — the namespaced `custom.regex` token (bare `regex` is legacy and silently disabled in Renovate v40+). The shared `default.json` defines two `customManagers`: one bumps the lefthook remote `ref`, the other bumps the wrangler `compatibility_date` via the `github-releases` datasource on `cloudflare/workerd` (its `v1.YYYYMMDD.N` tags map to the newest valid compat date; `extractVersion` + a regex versioning reconcile the dashed file value with the undashed tag).
 
 ## 6. Data flow
 
@@ -127,4 +127,4 @@ Build `kalpam` (workspace + the 3 carried-over packages + the 3 new packages + e
 
 - **Deferred slices:** `create-kalpam` CLI (2) · more presets incl. Turso + Next.js (3) · `kalpam.dev` selector (4).
 - **Resolved:** Vite is pinned at `^7`; the Vite 8 major upgrade is deferred to the OTA pull-upgrade — Renovate will surface it as a major-update PR once the cf-plugin + pool-workers peer ranges support it.
-- **Open:** decide whether `compatibility_date` is Renovate-custom-managed or manual.
+- **Resolved:** `compatibility_date` is **Renovate-managed** — a `default.json` `customManagers` entry tracks the `github-releases` datasource on `cloudflare/workerd` and opens a PR bumping the date to the latest workerd release (verified recipe; requires `custom.regex` in `enabledManagers`). No open items remain.
