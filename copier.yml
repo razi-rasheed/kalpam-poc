@@ -1,0 +1,23 @@
+_min_copier_version: '9.2.0'
+_subdirectory: presets/vite-tanstack-hono-d1-cf/template
+_templates_suffix: .jinja
+_answers_file: .copier-answers.yml
+
+project_name:
+  type: str
+  help: 'Project name (kebab-case; used as package/worker name and repo slug)'
+  validator: >-
+    {% if not (project_name | regex_search('^[a-z][a-z0-9-]*[a-z0-9]$')) %}
+    project_name must be kebab-case (a-z, 0-9, hyphens).
+    {% endif %}
+
+cloudflare_d1_database_name:
+  type: str
+  help: 'Cloudflare D1 database name (the binding stays DB)'
+  default: '{{ project_name }}-db'
+
+_tasks:
+  - command: 'pnpm install'
+    when: "{{ _copier_operation == 'copy' }}"
+  - command: 'pnpm exec lefthook install'
+    when: "{{ _copier_operation == 'copy' }}"
