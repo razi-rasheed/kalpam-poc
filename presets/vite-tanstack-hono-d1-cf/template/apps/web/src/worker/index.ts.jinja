@@ -1,0 +1,19 @@
+import { Hono } from "hono";
+import { createDb, posts } from "@{{ project_name }}/db";
+
+const app = new Hono<{ Bindings: Env }>()
+  .basePath("/api")
+  .get("/posts", async (c) => {
+    const db = createDb(c.env.DB);
+    const rows = await db.select().from(posts).all();
+    return c.json(rows);
+  })
+  .post("/posts", async (c) => {
+    const { slug, body } = await c.req.json<{ slug: string; body: string }>();
+    const db = createDb(c.env.DB);
+    const [row] = await db.insert(posts).values({ slug, body }).returning();
+    return c.json(row, 201);
+  });
+
+export default app;
+export type AppType = typeof app;

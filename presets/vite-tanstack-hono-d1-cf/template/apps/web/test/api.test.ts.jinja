@@ -1,0 +1,25 @@
+import { env, exports } from "cloudflare:workers";
+import { describe, it, expect } from "vitest";
+
+describe("api /api/posts", () => {
+  it("round-trips a post through D1", async () => {
+    const created = await exports.default.fetch("https://example.com/api/posts", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ slug: "hello", body: "world" }),
+    });
+    expect(created.status).toBe(201);
+
+    const got = await exports.default.fetch("https://example.com/api/posts");
+    expect(got.status).toBe(200);
+    const posts = (await got.json()) as Array<{ slug: string }>;
+    expect(posts.map((p) => p.slug)).toContain("hello");
+  });
+
+  it("seeds D1 directly then lists via the route", async () => {
+    await env.DB.prepare("INSERT INTO posts (slug, body) VALUES (?1, ?2)").bind("seeded", "x").run();
+    const res = await exports.default.fetch("https://example.com/api/posts");
+    const posts = (await res.json()) as Array<{ slug: string }>;
+    expect(posts.map((p) => p.slug)).toContain("seeded");
+  });
+});
