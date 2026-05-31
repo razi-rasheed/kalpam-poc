@@ -1,0 +1,36 @@
+{
+  "name": "web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "deploy": "wrangler deploy",
+    "check-types": "tsc -b",
+    "test": "vitest run",
+    "cf-typegen": "wrangler types"
+  },
+  "dependencies": {
+    "@{{ project_name }}/db": "workspace:*",
+    "hono": "^4.12.23",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "@tanstack/react-router": "^1.170.9"
+  },
+  "devDependencies": {
+    "@kalpam/tsconfig": "^0.1.0",
+    "@kalpam/vitest-config": "^0.1.0",
+    "@cloudflare/vite-plugin": "^1.39.0",
+    "@cloudflare/vitest-pool-workers": "^0.16.10",
+    "@cloudflare/workers-types": "^4.20260530.0",
+    "@tanstack/router-plugin": "^1.168.12",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "@vitest/coverage-istanbul": "^4.1.7",
+    "vite": "^7.0.0",
+    "vitest": "^4.1.7",
+    "wrangler": "^4.95.0"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "extends": "@kalpam/tsconfig/react.json",
+  "compilerOptions": {
+    "types": ["vite/client", "@cloudflare/workers-types"],
+    "paths": { "@/*": ["./src/client/*"] },
+    "baseUrl": "."
+  },
+  "include": ["src", "worker-configuration.d.ts", "test"],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}
