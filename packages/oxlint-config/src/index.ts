@@ -27,6 +27,11 @@ const config: OxlintConfig = {
       files: ['**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}'],
       rules: { 'no-console': 'off', 'typescript/no-explicit-any': 'off' },
     },
+    {
+      // CLI scripts and build/config files write to stdout/stderr by design.
+      files: ['**/scripts/**', '**/*.config.{js,cjs,mjs,ts,mts,cts}'],
+      rules: { 'no-console': 'off' },
+    },
   ],
   ignorePatterns: [
     '**/node_modules/**',
