@@ -1,0 +1,16 @@
+{
+  "name": "@rozomod/commitlint-config",
+  "version": "0.0.0",
+  "description": "Shared commitlint (conventional) config for rozomod projects.",
+  "type": "module",
+  "license": "MIT",
+  "publishConfig": { "access": "public" },
+  "repository": { "type": "git", "url": "git+https://github.com/rozomod/kalpam.git", "directory": "packages/commitlint-config" },
+  "exports": { ".": "./index.js", "./package.json": "./package.json" },
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "files": ["index.js", "index.d.ts"],
+  "dependencies": { "@commitlint/config-conventional": "^21.0.1" },
+  "peerDependencies": { "@commitlint/cli": ">=20.0.0" },
+  "devDependencies": { "@commitlint/cli": "^21.0.1" }
+}
