@@ -1,0 +1,26 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { hc } from "hono/client";
+import type { AppType } from "../../worker/index";
+
+const api = hc<AppType>("/");
+
+export const Route = createFileRoute("/")({
+  component: Home,
+});
+
+function Home() {
+  const [slugs, setSlugs] = useState<string[]>([]);
+  useEffect(() => {
+    api.api.posts
+      .$get()
+      .then((r) => r.json())
+      .then((posts) => setSlugs(posts.map((p) => p.slug)));
+  }, []);
+  return (
+    <main>
+      <h1>{{ project_name }}</h1>
+      <ul>{slugs.map((s) => <li key={s}>{s}</li>)}</ul>
+    </main>
+  );
+}
