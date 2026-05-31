@@ -3,6 +3,22 @@ _subdirectory: presets/vite-tanstack-hono-d1-cf/template
 _templates_suffix: .jinja
 _answers_file: .copier-answers.yml
 
+# With `_subdirectory` set to a real subdirectory, Copier's default `_exclude`
+# becomes [] — so we must restore the standard excludes AND drop `_agents`, the
+# directory of variable-free markdown partials that the AGENTS.md shells pull in
+# via `{% include %}`. Without this, those bare `.md` fragments would be copied
+# verbatim into every generated project.
+_exclude:
+  - copier.yaml
+  - copier.yml
+  - '~*'
+  - '*.py[co]'
+  - __pycache__
+  - .git
+  - .DS_Store
+  - .svn
+  - _agents
+
 project_name:
   type: str
   help: 'Project name (kebab-case; used as package/worker name and repo slug)'
