@@ -1,0 +1,10 @@
+import { defineConfig } from "drizzle-kit";
+
+export default defineConfig({
+  dialect: "sqlite",
+  driver: "d1-http",
+  schema: "./src/schema.ts",
+  out: "../../apps/web/migrations",
+  // d1-http creds (CLOUDFLARE_ACCOUNT_ID / CLOUDFLARE_DATABASE_ID / CLOUDFLARE_D1_TOKEN)
+  // are only needed for `push`/`studio`/remote inspection — `generate` works offline.
+});
