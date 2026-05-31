@@ -1,0 +1,7 @@
+import { defineConfig } from "oxlint";
+import kalpam from "@kalpam/oxlint-config";
+
+export default defineConfig({
+  extends: [kalpam],
+  env: { browser: true, node: true, es2024: true },
+});

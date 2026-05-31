@@ -1,0 +1,10 @@
+remotes:
+  - git_url: https://github.com/rozomod/kalpam
+    ref: {{ _copier_answers._commit | default("v0.1.0") }}
+    configs:
+      - lefthook.yml
+
+commit-msg:
+  commands:
+    commitlint:
+      run: pnpm exec commitlint --edit {1}

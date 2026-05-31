@@ -1,0 +1,7 @@
+import { defineConfig } from "vitest/config";
+
+// Each package owns its own vitest config (apps/web uses the Workers pool).
+// This root config only defines the project glob; it does NOT run apps/web in the default pool.
+export default defineConfig({
+  test: { projects: ["packages/*", "apps/web"] },
+});

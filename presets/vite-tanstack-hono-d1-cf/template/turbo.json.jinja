@@ -1,0 +1,11 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "ui": "tui",
+  "tasks": {
+    "build": { "dependsOn": ["^build", "db:generate"], "outputs": ["dist/**", ".wrangler/**"] },
+    "dev": { "cache": false, "persistent": true },
+    "check-types": { "dependsOn": ["^build", "db:generate"] },
+    "test": { "dependsOn": ["db:generate"], "outputs": ["coverage/**"] },
+    "db:generate": { "cache": false, "outputs": ["../../apps/web/migrations/**"] }
+  }
+}

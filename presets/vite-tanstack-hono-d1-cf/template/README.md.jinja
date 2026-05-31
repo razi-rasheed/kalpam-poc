@@ -1,0 +1,14 @@
+# {{ project_name }}
+
+Vite + React + TanStack Router SPA · Hono API · Drizzle + Cloudflare D1, deployed as a single Cloudflare Worker. Bootstrapped from [rozomod/kalpam](https://github.com/rozomod/kalpam).
+
+## Develop
+```bash
+nvm use && corepack enable && pnpm install
+pnpm exec wrangler d1 create {{ cloudflare_d1_database_name }}   # paste database_id into apps/web/wrangler.jsonc
+pnpm db:generate && pnpm db:migrate:local
+pnpm dev    # http://localhost:5173 (SPA + /api on one origin)
+```
+
+## Deploy
+Push to `main` with Conventional Commits → semantic-release cuts a tag → the deploy job ships to Cloudflare. Set repo secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
