@@ -24,7 +24,7 @@ We want to spin up many small, independent projects fast, with consistent toolin
 
 ## 3. Architecture overview
 
-**One repo, `rozomod/kalpam`, plays three roles:** it (a) publishes the shared config packages to public npm under `@rozomod/*`, (b) hosts the canonical git-hook config + the shared Renovate preset + the Copier scaffolding, and (c) holds **one Copier template per preset**. It is **unified-versioned** — a single git tag per release drives the npm publish, the Copier template ref, the lefthook remote ref, and the Renovate preset pin.
+**One repo, `rozomod/kalpam`, plays three roles:** it (a) publishes the shared config packages to public npm under `@kalpam/*`, (b) hosts the canonical git-hook config + the shared Renovate preset + the Copier scaffolding, and (c) holds **one Copier template per preset**. It is **unified-versioned** — a single git tag per release drives the npm publish, the Copier template ref, the lefthook remote ref, and the Renovate preset pin.
 
 Propagation splits by what a thing *is*:
 - **LIVE layer** — anything that is a package or a version number (tsconfig/oxlint/oxfmt/vitest/commitlint/semantic-release configs; framework dep versions). Propagates via **Renovate (npm)**.
@@ -32,7 +32,7 @@ Propagation splits by what a thing *is*:
 
 ```
 rozomod/kalpam  (unified-versioned)
-├── packages/@rozomod/{tsconfig,oxlint-config,oxfmt-config,vitest-config,commitlint-config,semantic-release-config}
+├── packages/@kalpam/{tsconfig,oxlint-config,oxfmt-config,vitest-config,commitlint-config,semantic-release-config}
 ├── lefthook.yml · default.json (Renovate preset) · scripts/ · .github/workflows/
 └── templates/vite-tanstack-hono-d1-cf/ (copier.yml + _agents/* + template/)
         │ npm publish + git tag (v0.1.0)            │ copier copy / Node bootstrap
@@ -43,15 +43,15 @@ rozomod/kalpam  (unified-versioned)
 
 ## 4. Slice 0 — the shared base
 
-**Carried over from the prior foundation design (reused as-is):** `@rozomod/{tsconfig,oxlint-config,oxfmt-config}`; lefthook consumed via `remotes:` + pinned tag; the Renovate `default.json` preset (atomic `@rozomod/**` group + lefthook-ref custom-manager); Copier scaffolding; the **OIDC Trusted Publishing** release pipeline (npm CLI — pnpm has no OIDC; `id-token: write`; a one-time manual `npm publish --access public` bootstrap per package, then tokenless OIDC); unified git-tag versioning.
+**Carried over from the prior foundation design (reused as-is):** `@kalpam/{tsconfig,oxlint-config,oxfmt-config}`; lefthook consumed via `remotes:` + pinned tag; the Renovate `default.json` preset (atomic `@kalpam/**` group + lefthook-ref custom-manager); Copier scaffolding; the **OIDC Trusted Publishing** release pipeline (npm CLI — pnpm has no OIDC; `id-token: write`; a one-time manual `npm publish --access public` bootstrap per package, then tokenless OIDC); unified git-tag versioning.
 
 **Three new config packages:**
 
 | Package | Shape | Consumed by |
 |---|---|---|
-| `@rozomod/vitest-config` | Built TS → `dist/`; default export = base config + `/node`, `/browser` subpaths; `vitest` peer `>=4.0.0` (dev `^4.1.7`). Stack-agnostic. | `vitest.config.ts` → `mergeConfig(base, {…})` |
-| `@rozomod/commitlint-config` | Buildless ESM (`index.js` + `index.d.ts`); `extends ["@commitlint/config-conventional"]` (dep `^21.0.1`); `@commitlint/cli` peer `>=20.0.0`. | `commitlint.config.js` (ESM; **not** `.ts`) |
-| `@rozomod/semantic-release-config` | JS module exporting the shared release config; plugins are its deps (`commit-analyzer ^13`, `release-notes-generator ^14.1.1`, `changelog ^6`, `git ^10`, `github ^12.0.8`). **No `@semantic-release/npm`** (apps, not libraries). | `.releaserc.json` → `{ "extends": "@rozomod/semantic-release-config" }` |
+| `@kalpam/vitest-config` | Built TS → `dist/`; default export = base config + `/node`, `/browser` subpaths; `vitest` peer `>=4.0.0` (dev `^4.1.7`). Stack-agnostic. | `vitest.config.ts` → `mergeConfig(base, {…})` |
+| `@kalpam/commitlint-config` | Buildless ESM (`index.js` + `index.d.ts`); `extends ["@commitlint/config-conventional"]` (dep `^21.0.1`); `@commitlint/cli` peer `>=20.0.0`. | `commitlint.config.js` (ESM; **not** `.ts`) |
+| `@kalpam/semantic-release-config` | JS module exporting the shared release config; plugins are its deps (`commit-analyzer ^13`, `release-notes-generator ^14.1.1`, `changelog ^6`, `git ^10`, `github ^12.0.8`). **No `@semantic-release/npm`** (apps, not libraries). | `.releaserc.json` → `{ "extends": "@kalpam/semantic-release-config" }` |
 
 **lefthook (canonical, repo root) — three stages:** pre-commit → oxlint + oxfmt on staged files; **commit-msg → `pnpm exec commitlint --edit {1}`**; pre-push (parallel) → `check-types` + `lint` + **`test`** (`turbo run test`).
 
@@ -66,7 +66,7 @@ rozomod/kalpam  (unified-versioned)
 - `src/worker/index.ts` — Hono (`/api/*`) + asset serving / SPA fallback; this is the wrangler `main`.
 - `vite.config.ts` — `@vitejs/plugin-react` + `tanstackRouter({ routesDirectory: "./src/client/routes", generatedRouteTree: "./src/client/routeTree.gen.ts" })` + `@cloudflare/vite-plugin`.
 - `wrangler.jsonc` — `main: "./src/worker/index.ts"`; `assets: { directory: "./dist/client", not_found_handling: "single-page-application" }`; `run_worker_first: ["/api/*"]`; `d1_databases: [{ binding: "DB", database_name, database_id: "REPLACE_WITH_D1_DATABASE_ID", migrations_dir: "migrations" }]`; `compatibility_date: "2026-05-30"`.
-- `vitest.config.ts` — `@cloudflare/vitest-pool-workers ^0.16.10` via its `cloudflareTest()` plugin (the ≥0.13 API), `mergeConfig`'d with the `@rozomod/vitest-config` default; real D1/bindings in tests.
+- `vitest.config.ts` — `@cloudflare/vitest-pool-workers ^0.16.10` via its `cloudflareTest()` plugin (the ≥0.13 API), `mergeConfig`'d with the `@kalpam/vitest-config` default; real D1/bindings in tests.
 - Typed env `{ DB: D1Database }`; the SPA calls Hono through `hono/client` (`hc`) sharing `AppType` for end-to-end types.
 
 **`packages/db`** (name `@{{ project_name }}/db`): Drizzle schema + `drizzle.config.ts` (dialect `d1`); `drizzle-orm ^0.45.2`, `drizzle-kit ^0.31.10`. Migrations output to **`apps/web/migrations`** — the single directory read by `drizzle-kit generate`, `wrangler d1 migrations apply`, and the Vitest `readD1Migrations` helper.
@@ -77,12 +77,12 @@ rozomod/kalpam  (unified-versioned)
 
 **CI / release / deploy** — a single `release.yml` with two jobs: a `release` job runs semantic-release; a `deploy` job `needs: release`, gated on `needs.release.outputs.released == 'true'`, checks out the new tag and runs `cloudflare/wrangler-action@v4` (`wrangler deploy` + `wrangler d1 migrations apply --remote`). A `GITHUB_TOKEN`-created release fires neither `on: release` nor `on: push: tags` (GitHub anti-recursion), so the job-dependency pattern is required. A separate `ci.yml` runs on PRs: install · lint · typecheck · test (workers pool) · build.
 
-**OTA wiring:** the preset is a Copier template; the seeded `.copier-answers.yml` (`_src_path: gh:rozomod/kalpam`, `_commit: v0.1.0`) plus the `@rozomod/*` dev-deps make it fully updatable. The consumer `renovate.json` extends `github>rozomod/kalpam#v0.1.0` with `enabledManagers: ["npm","github-actions","nvm","copier","custom.regex"]` — the namespaced `custom.regex` token (bare `regex` is legacy and silently disabled in Renovate v40+). The shared `default.json` defines two `customManagers`: one bumps the lefthook remote `ref`, the other bumps the wrangler `compatibility_date` via the `github-releases` datasource on `cloudflare/workerd` (its `v1.YYYYMMDD.N` tags map to the newest valid compat date; `extractVersion` + a regex versioning reconcile the dashed file value with the undashed tag).
+**OTA wiring:** the preset is a Copier template; the seeded `.copier-answers.yml` (`_src_path: gh:rozomod/kalpam`, `_commit: v0.1.0`) plus the `@kalpam/*` dev-deps make it fully updatable. The consumer `renovate.json` extends `github>rozomod/kalpam#v0.1.0` with `enabledManagers: ["npm","github-actions","nvm","copier","custom.regex"]` — the namespaced `custom.regex` token (bare `regex` is legacy and silently disabled in Renovate v40+). The shared `default.json` defines two `customManagers`: one bumps the lefthook remote `ref`, the other bumps the wrangler `compatibility_date` via the `github-releases` datasource on `cloudflare/workerd` (its `v1.YYYYMMDD.N` tags map to the newest valid compat date; `extractVersion` + a regex versioning reconcile the dashed file value with the undashed tag).
 
 ## 6. Data flow
 
 - **Request:** browser → Cloudflare Worker. `/api/*` → Hono (Drizzle over the `DB` D1 binding); everything else → static assets with SPA fallback. Client→server calls are typed via `hc<AppType>`.
-- **OTA:** a `kalpam` change → publish + tag (`vX.Y.Z`) → Renovate opens one grouped *"kalpam release"* PR per consumer that bumps the `@rozomod/*` npm deps **and** the `rozomod/kalpam` git-tag refs (Copier `_commit` + lefthook `ref`) together → merge applies the update.
+- **OTA:** a `kalpam` change → publish + tag (`vX.Y.Z`) → Renovate opens one grouped *"kalpam release"* PR per consumer that bumps the `@kalpam/*` npm deps **and** the `rozomod/kalpam` git-tag refs (Copier `_commit` + lefthook `ref`) together → merge applies the update.
 
 ## 7. Testing strategy
 

@@ -1,7 +1,7 @@
 {
-  "name": "@rozomod/tsconfig",
+  "name": "@kalpam/tsconfig",
   "version": "0.0.0",
-  "description": "Shared TypeScript configs for rozomod projects.",
+  "description": "Shared TypeScript configs for kalpam projects.",
   "license": "MIT",
   "repository": {
     "type": "git",

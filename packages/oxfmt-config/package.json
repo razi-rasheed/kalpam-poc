@@ -1,7 +1,7 @@
 {
-  "name": "@rozomod/oxfmt-config",
+  "name": "@kalpam/oxfmt-config",
   "version": "0.0.0",
-  "description": "Shared oxfmt formatter config for rozomod projects.",
+  "description": "Shared oxfmt formatter config for kalpam projects.",
   "license": "MIT",
   "repository": {
     "type": "git",

@@ -18,9 +18,9 @@
   },
   "devDependencies": {
     "@commitlint/cli": "^21.0.1",
-    "@rozomod/commitlint-config": "workspace:*",
-    "@rozomod/oxfmt-config": "workspace:*",
-    "@rozomod/oxlint-config": "workspace:*",
+    "@kalpam/commitlint-config": "workspace:*",
+    "@kalpam/oxfmt-config": "workspace:*",
+    "@kalpam/oxlint-config": "workspace:*",
     "lefthook": "^2.1.9",
     "oxfmt": "^0.52.0",
     "oxlint": "^1.67.0",

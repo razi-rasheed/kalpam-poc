@@ -4,13 +4,13 @@
 
 **Goal:** Build the first kalpam preset — a Copier template that scaffolds a unified Vite + React + TanStack Router SPA + Hono API + Drizzle + Cloudflare D1 app deployed as a single Worker + Static Assets — and prove it end-to-end (generate → build → test against real D1 → deploy → OTA).
 
-**Architecture:** The template lives in the `rozomod/kalpam` repo under `presets/vite-tanstack-hono-d1-cf/template/`, selected by a root `copier.yml` `_subdirectory`. Generated projects consume the `@rozomod/*` packages (Slice 0) and stay current via the shared Renovate preset + Copier. The app is **one** Vite project: `@cloudflare/vite-plugin`'s `cloudflare()` runs the Hono Worker in real workerd during dev with local D1; static assets + SPA fallback are platform-handled; the Worker runs only for `/api/*`.
+**Architecture:** The template lives in the `rozomod/kalpam` repo under `presets/vite-tanstack-hono-d1-cf/template/`, selected by a root `copier.yml` `_subdirectory`. Generated projects consume the `@kalpam/*` packages (Slice 0) and stay current via the shared Renovate preset + Copier. The app is **one** Vite project: `@cloudflare/vite-plugin`'s `cloudflare()` runs the Hono Worker in real workerd during dev with local D1; static assets + SPA fallback are platform-handled; the Worker runs only for `/api/*`.
 
 **Tech Stack (frozen matrix):** vite **^7** · @vitejs/plugin-react ^5 · react/react-dom ^19.2 · @tanstack/react-router ^1.170 · @tanstack/router-plugin ^1.168 · hono ^4.12.23 · drizzle-orm ^0.45.2 · drizzle-kit ^0.31.10 · @cloudflare/vite-plugin ^1.39.0 · wrangler ^4.95.0 · @cloudflare/vitest-pool-workers ^0.16.10 · vitest ^4.1.7 · @cloudflare/workers-types ^4.20260530 · semantic-release ^25 · Copier ≥9.2.
 
-**Prerequisite:** Slice 0 is built and published — `@rozomod/{tsconfig,oxlint-config,oxfmt-config,vitest-config,commitlint-config,semantic-release-config}` live on npm; `rozomod/kalpam` has `lefthook.yml`, `default.json`, and the OIDC `release.yml`. Spec: `docs/superpowers/specs/2026-05-31-kalpam-base-and-cf-preset-design.md`.
+**Prerequisite:** Slice 0 is built and published — `@kalpam/{tsconfig,oxlint-config,oxfmt-config,vitest-config,commitlint-config,semantic-release-config}` live on npm; `rozomod/kalpam` has `lefthook.yml`, `default.json`, and the OIDC `release.yml`. Spec: `docs/superpowers/specs/2026-05-31-kalpam-base-and-cf-preset-design.md`.
 
-> **Reconciliation fixes applied (do not revert to the raw component specs):** `enabledManagers` uses **`custom.regex`** (namespaced); `@cloudflare/vitest-pool-workers ^0.16.10` with the **`cloudflareTest()`** plugin (the old `defineWorkersConfig` is removed); deploy is a **`deploy` job `needs: release`** inside `release.yml` (a `GITHUB_TOKEN` release fires neither `on: release` nor `on: push: tags`); semantic-release config is **consumed from `@rozomod/semantic-release-config`** via `.releaserc.json` `extends` (no inlined plugins); seed **`commitlint.config.js`** (not `.ts`); migrations live at **`apps/web/migrations`**; worker entry at **`apps/web/src/worker/index.ts`**; client under **`apps/web/src/client/`**; ship **both `AGENTS.md` and a `CLAUDE.md` (`@AGENTS.md`)** at each level (Claude Code does not read `AGENTS.md`); import the **default** export of `@rozomod/vitest-config`.
+> **Reconciliation fixes applied (do not revert to the raw component specs):** `enabledManagers` uses **`custom.regex`** (namespaced); `@cloudflare/vitest-pool-workers ^0.16.10` with the **`cloudflareTest()`** plugin (the old `defineWorkersConfig` is removed); deploy is a **`deploy` job `needs: release`** inside `release.yml` (a `GITHUB_TOKEN` release fires neither `on: release` nor `on: push: tags`); semantic-release config is **consumed from `@kalpam/semantic-release-config`** via `.releaserc.json` `extends` (no inlined plugins); seed **`commitlint.config.js`** (not `.ts`); migrations live at **`apps/web/migrations`**; worker entry at **`apps/web/src/worker/index.ts`**; client under **`apps/web/src/client/`**; ship **both `AGENTS.md` and a `CLAUDE.md` (`@AGENTS.md`)** at each level (Claude Code does not read `AGENTS.md`); import the **default** export of `@kalpam/vitest-config`.
 
 > **TDD note:** template config/source files are authored then validated by the end-to-end generation (Task 11) — that generation, plus the generated app's own Vitest suite hitting real D1, is the integration test. The app's API logic is built TDD-first in Task 7 (write `api.test.ts` → see it fail → implement the route → see it pass).
 
@@ -86,7 +86,7 @@ git commit -m "feat(preset): scaffold vite-tanstack-hono-d1-cf Copier template +
 ```markdown
 ## Tooling
 - Package manager: **pnpm 11** (workspaces). Node **24** (`nvm use`). Turborepo orchestrates `build`/`check-types`/`test`/`dev`.
-- Lint/format: **oxlint** + **oxfmt** (config from `@rozomod/*`). Run `pnpm lint` / `pnpm format`. Never hand-format; let oxfmt own style.
+- Lint/format: **oxlint** + **oxfmt** (config from `@kalpam/*`). Run `pnpm lint` / `pnpm format`. Never hand-format; let oxfmt own style.
 - Tests: **Vitest 4**. App tests run in the Cloudflare Workers pool (real workerd + local D1).
 - Git hooks (lefthook): pre-commit lints/formats staged files; commit-msg enforces Conventional Commits; pre-push runs typecheck + lint + test. Do not bypass with `--no-verify`.
 ```
@@ -97,7 +97,7 @@ git commit -m "feat(preset): scaffold vite-tanstack-hono-d1-cf Copier template +
 ## Layout
 - `apps/web` — the deployable: Vite SPA (`src/client`) **and** the Hono Worker (`src/worker`) in one package, deployed as a single Cloudflare Worker + Static Assets.
 - `packages/db` — Drizzle schema + D1 helpers (`@<project>/db`). Imported by the worker via `workspace:*`.
-- Generated config (`tsconfig`, oxlint, oxfmt, vitest, commitlint, semantic-release) extends the published `@rozomod/*` packages — edit those upstream in `rozomod/kalpam`, not here.
+- Generated config (`tsconfig`, oxlint, oxfmt, vitest, commitlint, semantic-release) extends the published `@kalpam/*` packages — edit those upstream in `rozomod/kalpam`, not here.
 ```
 
 - [ ] **Step 3: Create `_agents/commits-release.md`**
@@ -230,12 +230,12 @@ git commit -m "feat(preset): add AGENTS.md fragments, assembled shells, CLAUDE.m
     "prepare": "lefthook install"
   },
   "devDependencies": {
-    "@rozomod/tsconfig": "^0.1.0",
-    "@rozomod/oxlint-config": "^0.1.0",
-    "@rozomod/oxfmt-config": "^0.1.0",
-    "@rozomod/vitest-config": "^0.1.0",
-    "@rozomod/commitlint-config": "^0.1.0",
-    "@rozomod/semantic-release-config": "^0.1.0",
+    "@kalpam/tsconfig": "^0.1.0",
+    "@kalpam/oxlint-config": "^0.1.0",
+    "@kalpam/oxfmt-config": "^0.1.0",
+    "@kalpam/vitest-config": "^0.1.0",
+    "@kalpam/commitlint-config": "^0.1.0",
+    "@kalpam/semantic-release-config": "^0.1.0",
     "@commitlint/cli": "^21.0.1",
     "deepmerge-ts": "^7.1.5",
     "lefthook": "^2.1.9",
@@ -308,7 +308,7 @@ apps/web/worker-configuration.d.ts
 
 ```jinja
 import { defineConfig } from "oxlint";
-import rozomod from "@rozomod/oxlint-config";
+import rozomod from "@kalpam/oxlint-config";
 
 export default defineConfig({
   extends: [rozomod],
@@ -320,7 +320,7 @@ export default defineConfig({
 
 ```jinja
 import { deepmerge } from "deepmerge-ts";
-import shared from "@rozomod/oxfmt-config/oxfmt" with { type: "json" };
+import shared from "@kalpam/oxfmt-config/oxfmt" with { type: "json" };
 
 export default deepmerge(shared, {
   // project-local oxfmt overrides (deep-merged over the shared config)
@@ -342,7 +342,7 @@ export default defineConfig({
 - [ ] **Step 10: Create `commitlint.config.js.jinja`**
 
 ```jinja
-export { default } from "@rozomod/commitlint-config";
+export { default } from "@kalpam/commitlint-config";
 ```
 
 - [ ] **Step 11: Create `lefthook.yml.jinja`** (remote canonical hooks + local commit-msg)
@@ -373,7 +373,7 @@ commit-msg:
 - [ ] **Step 13: Create `.releaserc.json.jinja`** (consumes the shared config package)
 
 ```jinja
-{ "extends": "@rozomod/semantic-release-config" }
+{ "extends": "@kalpam/semantic-release-config" }
 ```
 
 - [ ] **Step 14: Create `README.md.jinja`**
@@ -430,7 +430,7 @@ git commit -m "feat(preset): add template root files (configs, lefthook, renovat
   },
   "dependencies": { "drizzle-orm": "^0.45.2" },
   "devDependencies": {
-    "@rozomod/tsconfig": "^0.1.0",
+    "@kalpam/tsconfig": "^0.1.0",
     "@cloudflare/workers-types": "^4.20260530.0",
     "drizzle-kit": "^0.31.10",
     "typescript": "5.9.2"
@@ -442,7 +442,7 @@ git commit -m "feat(preset): add template root files (configs, lefthook, renovat
 
 ```jinja
 {
-  "extends": "@rozomod/tsconfig/node.json",
+  "extends": "@kalpam/tsconfig/node.json",
   "compilerOptions": { "types": ["@cloudflare/workers-types"], "noEmit": true },
   "include": ["src", "drizzle.config.ts"]
 }
@@ -530,8 +530,8 @@ git commit -m "feat(preset): add packages/db (Drizzle schema + D1 helper)"
     "@tanstack/react-router": "^1.170.9"
   },
   "devDependencies": {
-    "@rozomod/tsconfig": "^0.1.0",
-    "@rozomod/vitest-config": "^0.1.0",
+    "@kalpam/tsconfig": "^0.1.0",
+    "@kalpam/vitest-config": "^0.1.0",
     "@cloudflare/vite-plugin": "^1.39.0",
     "@cloudflare/vitest-pool-workers": "^0.16.10",
     "@cloudflare/workers-types": "^4.20260530.0",
@@ -599,7 +599,7 @@ export default defineConfig({
 
 ```jinja
 {
-  "extends": "@rozomod/tsconfig/react.json",
+  "extends": "@kalpam/tsconfig/react.json",
   "compilerOptions": {
     "types": ["vite/client", "@cloudflare/workers-types"],
     "paths": { "@/*": ["./src/client/*"] },
@@ -614,7 +614,7 @@ export default defineConfig({
 
 ```jinja
 {
-  "extends": "@rozomod/tsconfig/node.json",
+  "extends": "@kalpam/tsconfig/node.json",
   "compilerOptions": { "composite": true, "noEmit": true, "moduleResolution": "Bundler" },
   "include": ["vite.config.ts", "vitest.config.ts", "drizzle.config.ts"]
 }
@@ -745,7 +745,7 @@ git commit -m "feat(preset): add TanStack Router SPA client (root, index, main)"
 import path from "node:path";
 import { cloudflareTest, readD1Migrations } from "@cloudflare/vitest-pool-workers";
 import { defineConfig, defineProject, mergeConfig } from "vitest/config";
-import shared from "@rozomod/vitest-config";
+import shared from "@kalpam/vitest-config";
 
 export default defineConfig(async () => {
   const migrations = await readD1Migrations(path.join(__dirname, "migrations"));
@@ -1015,7 +1015,7 @@ git commit -am "feat(preset): release v0.2.0 (vite-tanstack-hono-d1-cf template)
 git tag v0.2.0
 git push origin main --follow-tags
 ```
-Expected: `release.yml` (kalpam's own) publishes the six packages at `0.2.0` via OIDC; `npm view @rozomod/tsconfig version` → `0.2.0`.
+Expected: `release.yml` (kalpam's own) publishes the six packages at `0.2.0` via OIDC; `npm view @kalpam/tsconfig version` → `0.2.0`.
 
 > The template's `renovate.json.jinja` and `lefthook.yml.jinja` use `{{ _copier_answers._commit }}`, so a project generated with `--vcs-ref v0.2.0` automatically pins `v0.2.0`.
 
@@ -1069,7 +1069,7 @@ Expected: `release.yml` `release` job cuts a tag + GitHub Release; the `deploy` 
 - [ ] **Step 7: Verify OTA**
 
 Run (after installing the Renovate App on the probe repo): `pnpm dlx --package renovate renovate-config-validator renovate.json`
-Expected: passes. Then confirm Renovate opens a "Configure Renovate" onboarding PR detecting `.copier-answers.yml` (copier manager) + the `@rozomod/*` deps. Later, cutting kalpam `v0.3.0` should yield one grouped **"kalpam release"** PR bumping the `@rozomod/*` deps **and** the `rozomod/kalpam` refs (copier `_commit` + lefthook `ref`) together.
+Expected: passes. Then confirm Renovate opens a "Configure Renovate" onboarding PR detecting `.copier-answers.yml` (copier manager) + the `@kalpam/*` deps. Later, cutting kalpam `v0.3.0` should yield one grouped **"kalpam release"** PR bumping the `@kalpam/*` deps **and** the `rozomod/kalpam` refs (copier `_commit` + lefthook `ref`) together.
 
 - [ ] **Step 8: Clean up the probe** — `rm -rf /tmp/probe-app` and delete the probe GitHub repo + D1 db once satisfied.
 

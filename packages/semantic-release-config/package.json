@@ -1,7 +1,7 @@
 {
-  "name": "@rozomod/semantic-release-config",
+  "name": "@kalpam/semantic-release-config",
   "version": "0.0.0",
-  "description": "Shared semantic-release config for rozomod app presets (no npm publish).",
+  "description": "Shared semantic-release config for kalpam app presets (no npm publish).",
   "license": "MIT",
   "repository": {
     "type": "git",

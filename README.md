@@ -1,11 +1,11 @@
 # kalpam
 
-The kalpam base: shared `@rozomod/*` config packages, canonical git hooks, a shared Renovate preset, and the release pipeline that publishes them. Presets live under `templates/`.
+The kalpam base: shared `@kalpam/*` config packages, canonical git hooks, a shared Renovate preset, and the release pipeline that publishes them. Presets live under `templates/`.
 
 ## Packages
 
-- `@rozomod/tsconfig` · `@rozomod/oxlint-config` · `@rozomod/oxfmt-config`
-- `@rozomod/vitest-config` · `@rozomod/commitlint-config` · `@rozomod/semantic-release-config`
+- `@kalpam/tsconfig` · `@kalpam/oxlint-config` · `@kalpam/oxfmt-config`
+- `@kalpam/vitest-config` · `@kalpam/commitlint-config` · `@kalpam/semantic-release-config`
 
 ## Develop
 

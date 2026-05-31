@@ -1,1 +1,1 @@
-export { default } from '@rozomod/commitlint-config';
+export { default } from '@kalpam/commitlint-config';

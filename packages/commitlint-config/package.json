@@ -1,7 +1,7 @@
 {
-  "name": "@rozomod/commitlint-config",
+  "name": "@kalpam/commitlint-config",
   "version": "0.0.0",
-  "description": "Shared commitlint (conventional) config for rozomod projects.",
+  "description": "Shared commitlint (conventional) config for kalpam projects.",
   "license": "MIT",
   "repository": {
     "type": "git",

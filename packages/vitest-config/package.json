@@ -1,7 +1,7 @@
 {
-  "name": "@rozomod/vitest-config",
+  "name": "@kalpam/vitest-config",
   "version": "0.0.0",
-  "description": "Shared Vitest base config for rozomod projects.",
+  "description": "Shared Vitest base config for kalpam projects.",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -35,7 +35,7 @@
     "clean": "rm -rf dist"
   },
   "devDependencies": {
-    "@rozomod/tsconfig": "workspace:*",
+    "@kalpam/tsconfig": "workspace:*",
     "typescript": "5.9.2",
     "vitest": "^4.1.7"
   },

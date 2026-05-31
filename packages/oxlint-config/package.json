@@ -1,7 +1,7 @@
 {
-  "name": "@rozomod/oxlint-config",
+  "name": "@kalpam/oxlint-config",
   "version": "0.0.0",
-  "description": "Shared oxlint config for rozomod projects.",
+  "description": "Shared oxlint config for kalpam projects.",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -27,7 +27,7 @@
     "clean": "rm -rf dist"
   },
   "devDependencies": {
-    "@rozomod/tsconfig": "workspace:*",
+    "@kalpam/tsconfig": "workspace:*",
     "oxlint": "^1.67.0",
     "typescript": "5.9.2"
   },

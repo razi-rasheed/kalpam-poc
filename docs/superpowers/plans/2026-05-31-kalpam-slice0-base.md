@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build and publish the stack-agnostic kalpam base — six `@rozomod/*` config packages, the canonical lefthook config, the shared Renovate preset, and the OIDC release pipeline — so any preset can consume them and stay current via OTA.
+**Goal:** Build and publish the stack-agnostic kalpam base — six `@kalpam/*` config packages, the canonical lefthook config, the shared Renovate preset, and the OIDC release pipeline — so any preset can consume them and stay current via OTA.
 
 **Architecture:** One pnpm + Turborepo monorepo (`rozomod/kalpam`) that publishes config packages to public npm, is **unified-versioned** (one git tag publishes all packages), and uses npm OIDC Trusted Publishing (no `NPM_TOKEN`). Config packages follow two shapes: built TS→`dist/` (oxlint, vitest) and buildless/JSON (tsconfig, oxfmt, commitlint, semantic-release). Slice 1 (the first preset) is a separate plan that depends on these packages being published.
 
@@ -105,11 +105,11 @@ coverage
 ```markdown
 # kalpam
 
-The kalpam base: shared `@rozomod/*` config packages, canonical git hooks, a shared Renovate preset, and the release pipeline that publishes them. Presets live under `templates/`.
+The kalpam base: shared `@kalpam/*` config packages, canonical git hooks, a shared Renovate preset, and the release pipeline that publishes them. Presets live under `templates/`.
 
 ## Packages
-- `@rozomod/tsconfig` · `@rozomod/oxlint-config` · `@rozomod/oxfmt-config`
-- `@rozomod/vitest-config` · `@rozomod/commitlint-config` · `@rozomod/semantic-release-config`
+- `@kalpam/tsconfig` · `@kalpam/oxlint-config` · `@kalpam/oxfmt-config`
+- `@kalpam/vitest-config` · `@kalpam/commitlint-config` · `@kalpam/semantic-release-config`
 
 ## Develop
 ```bash
@@ -133,7 +133,7 @@ git commit -m "chore: scaffold kalpam workspace root"
 
 ---
 
-## Task 2: `@rozomod/tsconfig` (JSON-only, no build)
+## Task 2: `@kalpam/tsconfig` (JSON-only, no build)
 
 **Files:**
 - Create: `packages/tsconfig/package.json`, `packages/tsconfig/base.json`, `packages/tsconfig/node.json`, `packages/tsconfig/react.json`
@@ -142,14 +142,14 @@ git commit -m "chore: scaffold kalpam workspace root"
 
 - [ ] **Step 1: Verify it does NOT resolve yet**
 
-Run: `node -e "require.resolve('@rozomod/tsconfig/base.json')" 2>&1 || echo MISSING`
+Run: `node -e "require.resolve('@kalpam/tsconfig/base.json')" 2>&1 || echo MISSING`
 Expected: `MISSING`
 
 - [ ] **Step 2: Create `packages/tsconfig/package.json`**
 
 ```json
 {
-  "name": "@rozomod/tsconfig",
+  "name": "@kalpam/tsconfig",
   "version": "0.0.0",
   "description": "Shared TypeScript configs for rozomod projects.",
   "license": "MIT",
@@ -214,7 +214,7 @@ Expected: `MISSING`
 - [ ] **Step 6: Verify the configs are valid JSON**
 
 Run: `node -e "const fs=require('fs');['base','node','react'].forEach(f=>JSON.parse(fs.readFileSync('packages/tsconfig/'+f+'.json','utf8')));console.log('JSON-OK')"`
-Expected: `JSON-OK`. (Cross-package `extends` resolution — `"@rozomod/tsconfig/base.json"` resolving from `node_modules` — is proven when `@rozomod/oxlint-config` builds in Task 3, whose `tsconfig.json` extends it; building there fails loudly if resolution breaks.)
+Expected: `JSON-OK`. (Cross-package `extends` resolution — `"@kalpam/tsconfig/base.json"` resolving from `node_modules` — is proven when `@kalpam/oxlint-config` builds in Task 3, whose `tsconfig.json` extends it; building there fails loudly if resolution breaks.)
 
 - [ ] **Step 7: Verify the published file set**
 
@@ -225,12 +225,12 @@ Expected: lists exactly `base.json`, `node.json`, `react.json`, `package.json` (
 
 ```bash
 git add packages/tsconfig
-git commit -m "feat(tsconfig): add @rozomod/tsconfig base/node/react configs"
+git commit -m "feat(tsconfig): add @kalpam/tsconfig base/node/react configs"
 ```
 
 ---
 
-## Task 3: `@rozomod/oxlint-config` (built TS → dist/)
+## Task 3: `@kalpam/oxlint-config` (built TS → dist/)
 
 **Files:**
 - Create: `packages/oxlint-config/package.json`, `packages/oxlint-config/tsconfig.json`, `packages/oxlint-config/src/index.ts`
@@ -239,7 +239,7 @@ git commit -m "feat(tsconfig): add @rozomod/tsconfig base/node/react configs"
 
 ```json
 {
-  "name": "@rozomod/oxlint-config",
+  "name": "@kalpam/oxlint-config",
   "version": "0.0.0",
   "description": "Shared oxlint config for rozomod projects.",
   "type": "module",
@@ -250,7 +250,7 @@ git commit -m "feat(tsconfig): add @rozomod/tsconfig base/node/react configs"
   "files": ["dist"],
   "scripts": { "build": "tsc -p tsconfig.json", "clean": "rm -rf dist" },
   "peerDependencies": { "oxlint": ">=1.63.0" },
-  "devDependencies": { "@rozomod/tsconfig": "workspace:*", "oxlint": "^1.67.0", "typescript": "5.9.2" }
+  "devDependencies": { "@kalpam/tsconfig": "workspace:*", "oxlint": "^1.67.0", "typescript": "5.9.2" }
 }
 ```
 
@@ -258,7 +258,7 @@ git commit -m "feat(tsconfig): add @rozomod/tsconfig base/node/react configs"
 
 ```json
 {
-  "extends": "@rozomod/tsconfig/base.json",
+  "extends": "@kalpam/tsconfig/base.json",
   "compilerOptions": { "outDir": "dist", "rootDir": "src", "noEmit": false, "module": "ESNext", "moduleResolution": "Bundler" },
   "include": ["src"]
 }
@@ -271,7 +271,7 @@ import type { OxlintConfig } from "oxlint";
 
 /**
  * Shared oxlint config object. Consume from a project's oxlint.config.ts:
- *   import rozomod from "@rozomod/oxlint-config";
+ *   import rozomod from "@kalpam/oxlint-config";
  *   import { defineConfig } from "oxlint";
  *   export default defineConfig({ extends: [rozomod], env: { browser: true, node: true, es2024: true } });
  * NOTE: oxlint does NOT inherit `env` through `extends` (oxc#20087) — consumers re-declare it.
@@ -304,24 +304,24 @@ export default config;
 
 - [ ] **Step 4: Build it**
 
-Run: `pnpm --filter @rozomod/oxlint-config build`
+Run: `pnpm --filter @kalpam/oxlint-config build`
 Expected: emits `dist/index.js` + `dist/index.d.ts`, exit 0.
 
 - [ ] **Step 5: Verify the default export loads**
 
-Run: `node -e "import('@rozomod/oxlint-config').then(m=>console.log(Array.isArray(m.default.plugins)))"`
+Run: `node -e "import('@kalpam/oxlint-config').then(m=>console.log(Array.isArray(m.default.plugins)))"`
 Expected: `true`
 
 - [ ] **Step 6: Commit**
 
 ```bash
 git add packages/oxlint-config
-git commit -m "feat(oxlint-config): add @rozomod/oxlint-config shared ruleset"
+git commit -m "feat(oxlint-config): add @kalpam/oxlint-config shared ruleset"
 ```
 
 ---
 
-## Task 4: `@rozomod/oxfmt-config` (JSON-only, no build)
+## Task 4: `@kalpam/oxfmt-config` (JSON-only, no build)
 
 **Files:**
 - Create: `packages/oxfmt-config/package.json`, `packages/oxfmt-config/oxfmt.json`
@@ -330,7 +330,7 @@ git commit -m "feat(oxlint-config): add @rozomod/oxlint-config shared ruleset"
 
 ```json
 {
-  "name": "@rozomod/oxfmt-config",
+  "name": "@kalpam/oxfmt-config",
   "version": "0.0.0",
   "description": "Shared oxfmt formatter config for rozomod projects.",
   "type": "module",
@@ -362,19 +362,19 @@ git commit -m "feat(oxlint-config): add @rozomod/oxlint-config shared ruleset"
 
 - [ ] **Step 3: Verify it imports as JSON**
 
-Run: `pnpm install && node --input-type=module -e "import c from '@rozomod/oxfmt-config/oxfmt' with { type: 'json' }; console.log(c.printWidth===100 && c.singleQuote===true)"`
+Run: `pnpm install && node --input-type=module -e "import c from '@kalpam/oxfmt-config/oxfmt' with { type: 'json' }; console.log(c.printWidth===100 && c.singleQuote===true)"`
 Expected: `true`
 
 - [ ] **Step 4: Commit**
 
 ```bash
 git add packages/oxfmt-config
-git commit -m "feat(oxfmt-config): add @rozomod/oxfmt-config formatter config"
+git commit -m "feat(oxfmt-config): add @kalpam/oxfmt-config formatter config"
 ```
 
 ---
 
-## Task 5: `@rozomod/vitest-config` (built TS → dist/)
+## Task 5: `@kalpam/vitest-config` (built TS → dist/)
 
 **Files:**
 - Create: `packages/vitest-config/package.json`, `packages/vitest-config/tsconfig.json`, `packages/vitest-config/src/index.ts`, `packages/vitest-config/src/node.ts`, `packages/vitest-config/src/browser.ts`
@@ -383,7 +383,7 @@ git commit -m "feat(oxfmt-config): add @rozomod/oxfmt-config formatter config"
 
 ```json
 {
-  "name": "@rozomod/vitest-config",
+  "name": "@kalpam/vitest-config",
   "version": "0.0.0",
   "description": "Shared Vitest base config for rozomod projects.",
   "type": "module",
@@ -398,7 +398,7 @@ git commit -m "feat(oxfmt-config): add @rozomod/oxfmt-config formatter config"
   "files": ["dist"],
   "scripts": { "build": "tsc -p tsconfig.json", "clean": "rm -rf dist" },
   "peerDependencies": { "vitest": ">=4.0.0" },
-  "devDependencies": { "@rozomod/tsconfig": "workspace:*", "typescript": "5.9.2", "vitest": "^4.1.7" }
+  "devDependencies": { "@kalpam/tsconfig": "workspace:*", "typescript": "5.9.2", "vitest": "^4.1.7" }
 }
 ```
 
@@ -406,7 +406,7 @@ git commit -m "feat(oxfmt-config): add @rozomod/oxfmt-config formatter config"
 
 ```json
 {
-  "extends": "@rozomod/tsconfig/base.json",
+  "extends": "@kalpam/tsconfig/base.json",
   "compilerOptions": { "outDir": "dist", "rootDir": "src", "noEmit": false, "module": "ESNext", "moduleResolution": "Bundler" },
   "include": ["src"]
 }
@@ -450,19 +450,19 @@ export default mergeConfig(base, { test: { environment: "jsdom" } });
 
 - [ ] **Step 6: Build + verify default export loads**
 
-Run: `pnpm --filter @rozomod/vitest-config build && node -e "import('@rozomod/vitest-config').then(m=>console.log(!!m.default.test))"`
+Run: `pnpm --filter @kalpam/vitest-config build && node -e "import('@kalpam/vitest-config').then(m=>console.log(!!m.default.test))"`
 Expected: build exit 0, then `true`.
 
 - [ ] **Step 7: Commit**
 
 ```bash
 git add packages/vitest-config
-git commit -m "feat(vitest-config): add @rozomod/vitest-config base + node/browser"
+git commit -m "feat(vitest-config): add @kalpam/vitest-config base + node/browser"
 ```
 
 ---
 
-## Task 6: `@rozomod/commitlint-config` (buildless ESM)
+## Task 6: `@kalpam/commitlint-config` (buildless ESM)
 
 **Files:**
 - Create: `packages/commitlint-config/package.json`, `packages/commitlint-config/index.js`, `packages/commitlint-config/index.d.ts`
@@ -471,7 +471,7 @@ git commit -m "feat(vitest-config): add @rozomod/vitest-config base + node/brows
 
 ```json
 {
-  "name": "@rozomod/commitlint-config",
+  "name": "@kalpam/commitlint-config",
   "version": "0.0.0",
   "description": "Shared commitlint (conventional) config for rozomod projects.",
   "type": "module",
@@ -515,8 +515,8 @@ export default config;
 Run:
 ```bash
 pnpm install
-printf 'feat: a valid message\n' | pnpm --filter @rozomod/commitlint-config exec commitlint --config index.js && echo VALID-OK
-printf 'broken message\n'        | pnpm --filter @rozomod/commitlint-config exec commitlint --config index.js || echo INVALID-REJECTED
+printf 'feat: a valid message\n' | pnpm --filter @kalpam/commitlint-config exec commitlint --config index.js && echo VALID-OK
+printf 'broken message\n'        | pnpm --filter @kalpam/commitlint-config exec commitlint --config index.js || echo INVALID-REJECTED
 ```
 Expected: `VALID-OK` for the conventional message, `INVALID-REJECTED` for the broken one. (Runs in the package dir so its bundled `@commitlint/cli` + `config-conventional` resolve locally — no registry fetch of the unpublished workspace package.)
 
@@ -524,12 +524,12 @@ Expected: `VALID-OK` for the conventional message, `INVALID-REJECTED` for the br
 
 ```bash
 git add packages/commitlint-config
-git commit -m "feat(commitlint-config): add @rozomod/commitlint-config (conventional)"
+git commit -m "feat(commitlint-config): add @kalpam/commitlint-config (conventional)"
 ```
 
 ---
 
-## Task 7: `@rozomod/semantic-release-config` (JS module, app-oriented)
+## Task 7: `@kalpam/semantic-release-config` (JS module, app-oriented)
 
 **Files:**
 - Create: `packages/semantic-release-config/package.json`, `packages/semantic-release-config/index.js`
@@ -540,7 +540,7 @@ git commit -m "feat(commitlint-config): add @rozomod/commitlint-config (conventi
 
 ```json
 {
-  "name": "@rozomod/semantic-release-config",
+  "name": "@kalpam/semantic-release-config",
   "version": "0.0.0",
   "description": "Shared semantic-release config for rozomod app presets (no npm publish).",
   "type": "module",
@@ -582,14 +582,14 @@ export default config;
 
 - [ ] **Step 3: Verify it loads + has no npm plugin**
 
-Run: `node -e "import('@rozomod/semantic-release-config').then(m=>{const p=JSON.stringify(m.default.plugins); console.log(!p.includes('@semantic-release/npm') && m.default.branches[0]==='main')})"`
+Run: `node -e "import('@kalpam/semantic-release-config').then(m=>{const p=JSON.stringify(m.default.plugins); console.log(!p.includes('@semantic-release/npm') && m.default.branches[0]==='main')})"`
 Expected: `true` (after `pnpm install`).
 
 - [ ] **Step 4: Commit**
 
 ```bash
 git add packages/semantic-release-config
-git commit -m "feat(semantic-release-config): add @rozomod/semantic-release-config (app)"
+git commit -m "feat(semantic-release-config): add @kalpam/semantic-release-config (app)"
 ```
 
 ---
@@ -636,11 +636,11 @@ pre-push:
 Edit root `package.json` `devDependencies` to add:
 ```json
 "@commitlint/cli": "^21.0.1",
-"@rozomod/commitlint-config": "workspace:*"
+"@kalpam/commitlint-config": "workspace:*"
 ```
 And create root `commitlint.config.js`:
 ```js
-export { default } from "@rozomod/commitlint-config";
+export { default } from "@kalpam/commitlint-config";
 ```
 
 - [ ] **Step 3: Install hooks + verify dump**
@@ -677,8 +677,8 @@ git commit -m "chore: add canonical lefthook hooks (pre-commit, commit-msg, pre-
   "lockFileMaintenance": { "enabled": true, "schedule": ["before 5am on monday"] },
   "packageRules": [
     {
-      "description": "Atomic kalpam release: group the @rozomod/* npm bumps with the rozomod/kalpam git-tag refs (copier + lefthook)",
-      "matchPackageNames": ["@rozomod/**", "rozomod/kalpam"],
+      "description": "Atomic kalpam release: group the @kalpam/* npm bumps with the rozomod/kalpam git-tag refs (copier + lefthook)",
+      "matchPackageNames": ["@kalpam/**", "rozomod/kalpam"],
       "groupName": "kalpam release",
       "automerge": true,
       "automergeType": "pr",
@@ -952,7 +952,7 @@ Run (after `npm login` as `rozomod`):
 ```bash
 node scripts/publish-all.mjs
 ```
-Expected: all six `@rozomod/*` packages published at `0.1.0` (provenance not generated locally — that's fine for the bootstrap).
+Expected: all six `@kalpam/*` packages published at `0.1.0` (provenance not generated locally — that's fine for the bootstrap).
 
 - [ ] **Step 3: Configure npm Trusted Publishers (manual, npmjs.com)**
 
@@ -966,13 +966,13 @@ git commit -am "chore(release): v0.1.0" || true
 git tag v0.1.0
 git push origin main --follow-tags
 ```
-Expected: `release.yml` runs; `publish-all.mjs` logs `skip @rozomod/...@0.1.0 (already published)` for all six (idempotent — no double publish).
+Expected: `release.yml` runs; `publish-all.mjs` logs `skip @kalpam/...@0.1.0 (already published)` for all six (idempotent — no double publish).
 
 - [ ] **Step 5: Verify all six are live at 0.1.0**
 
 Run:
 ```bash
-for p in tsconfig oxlint-config oxfmt-config vitest-config commitlint-config semantic-release-config; do npm view @rozomod/$p version; done
+for p in tsconfig oxlint-config oxfmt-config vitest-config commitlint-config semantic-release-config; do npm view @kalpam/$p version; done
 ```
 Expected: `0.1.0` printed six times.
 
@@ -981,4 +981,4 @@ Expected: `0.1.0` printed six times.
 ---
 
 ## Done criteria for Slice 0
-All six `@rozomod/*` packages published at `0.1.0`; `pnpm build/check-types/test/lint/check-format` green; lefthook hooks fire (pre-commit, commit-msg, pre-push); `renovate-config-validator` passes `default.json`; tag `v0.1.0` exists (the ref the preset + lefthook + Renovate will pin). **Slice 1 (the `vite-tanstack-hono-d1-cf` preset) is the next plan and consumes these published packages.**
+All six `@kalpam/*` packages published at `0.1.0`; `pnpm build/check-types/test/lint/check-format` green; lefthook hooks fire (pre-commit, commit-msg, pre-push); `renovate-config-validator` passes `default.json`; tag `v0.1.0` exists (the ref the preset + lefthook + Renovate will pin). **Slice 1 (the `vite-tanstack-hono-d1-cf` preset) is the next plan and consumes these published packages.**

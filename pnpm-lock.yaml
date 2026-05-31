@@ -11,13 +11,13 @@ importers:
       '@commitlint/cli':
         specifier: ^21.0.1
         version: 21.0.2(@types/node@25.9.1)(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.4.0)(typescript@5.9.2)
-      '@rozomod/commitlint-config':
+      '@kalpam/commitlint-config':
         specifier: workspace:*
         version: link:packages/commitlint-config
-      '@rozomod/oxfmt-config':
+      '@kalpam/oxfmt-config':
         specifier: workspace:*
         version: link:packages/oxfmt-config
-      '@rozomod/oxlint-config':
+      '@kalpam/oxlint-config':
         specifier: workspace:*
         version: link:packages/oxlint-config
       lefthook:
@@ -60,7 +60,7 @@ importers:
 
   packages/oxlint-config:
     devDependencies:
-      '@rozomod/tsconfig':
+      '@kalpam/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
       oxlint:
@@ -98,7 +98,7 @@ importers:
 
   packages/vitest-config:
     devDependencies:
-      '@rozomod/tsconfig':
+      '@kalpam/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
       typescript:

@@ -2,9 +2,9 @@ import type { OxlintConfig } from 'oxlint';
 
 /**
  * Shared oxlint config object. Consume from a project's oxlint.config.ts:
- *   import rozomod from "@rozomod/oxlint-config";
+ *   import kalpam from "@kalpam/oxlint-config";
  *   import { defineConfig } from "oxlint";
- *   export default defineConfig({ extends: [rozomod], env: { browser: true, node: true, es2024: true } });
+ *   export default defineConfig({ extends: [kalpam], env: { browser: true, node: true, es2024: true } });
  * NOTE: oxlint does NOT inherit `env` through `extends` (oxc#20087) — consumers re-declare it.
  */
 const config: OxlintConfig = {

@@ -5,8 +5,8 @@
   "lockFileMaintenance": { "enabled": true, "schedule": ["before 5am on monday"] },
   "packageRules": [
     {
-      "description": "Atomic kalpam release: group the @rozomod/* npm bumps with the rozomod/kalpam git-tag refs (copier + lefthook)",
-      "matchPackageNames": ["@rozomod/**", "rozomod/kalpam"],
+      "description": "Atomic kalpam release: group the @kalpam/* npm bumps with the rozomod/kalpam git-tag refs (copier + lefthook)",
+      "matchPackageNames": ["@kalpam/**", "rozomod/kalpam"],
       "groupName": "kalpam release",
       "automerge": true,
       "automergeType": "pr",

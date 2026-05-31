@@ -1,4 +1,4 @@
-import shared from '@rozomod/oxfmt-config/oxfmt' with { type: 'json' };
+import shared from '@kalpam/oxfmt-config/oxfmt' with { type: 'json' };
 
 export default {
   ...shared,

@@ -1,5 +1,5 @@
 {
-  "extends": "@rozomod/tsconfig/base.json",
+  "extends": "@kalpam/tsconfig/base.json",
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src",
