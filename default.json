@@ -17,6 +17,16 @@
       "description": "Pin GitHub Actions to digests",
       "matchManagers": ["github-actions"],
       "pinDigests": true
+    },
+    {
+      "description": "Group the Cloudflare stack",
+      "matchPackageNames": ["wrangler", "@cloudflare/**", "miniflare"],
+      "groupName": "cloudflare stack"
+    },
+    {
+      "description": "Group TanStack Router",
+      "matchPackageNames": ["@tanstack/**"],
+      "groupName": "tanstack router"
     }
   ],
   "copier": { "enabled": true, "versioning": "semver" },
