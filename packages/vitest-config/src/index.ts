@@ -1,4 +1,4 @@
-import { defineConfig, type ViteUserConfig } from "vitest/config";
+import { defineConfig, type ViteUserConfig } from 'vitest/config';
 
 /** Stack-agnostic Vitest base. Consume via mergeConfig in a project's vitest.config.ts. */
 const base: ViteUserConfig = defineConfig({
@@ -6,7 +6,11 @@ const base: ViteUserConfig = defineConfig({
     globals: false,
     clearMocks: true,
     passWithNoTests: true,
-    coverage: { provider: "v8", reporter: ["text", "html"], exclude: ["**/dist/**", "**/*.config.*", "**/*.d.ts"] },
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html'],
+      exclude: ['**/dist/**', '**/*.config.*', '**/*.d.ts'],
+    },
   },
 });
 

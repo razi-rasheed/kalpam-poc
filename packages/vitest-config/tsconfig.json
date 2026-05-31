@@ -1,5 +1,11 @@
 {
   "extends": "@rozomod/tsconfig/base.json",
-  "compilerOptions": { "outDir": "dist", "rootDir": "src", "noEmit": false, "module": "ESNext", "moduleResolution": "Bundler" },
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "noEmit": false,
+    "module": "ESNext",
+    "moduleResolution": "Bundler"
+  },
   "include": ["src"]
 }

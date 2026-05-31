@@ -14,6 +14,12 @@ importers:
       '@rozomod/commitlint-config':
         specifier: workspace:*
         version: link:packages/commitlint-config
+      '@rozomod/oxfmt-config':
+        specifier: workspace:*
+        version: link:packages/oxfmt-config
+      '@rozomod/oxlint-config':
+        specifier: workspace:*
+        version: link:packages/oxlint-config
       lefthook:
         specifier: ^2.1.9
         version: 2.1.9

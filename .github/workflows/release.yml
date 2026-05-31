@@ -1,7 +1,7 @@
 name: release
 on:
   push:
-    tags: ["v*.*.*"]
+    tags: ['v*.*.*']
 permissions:
   contents: read
   id-token: write # npm OIDC trusted publishing
@@ -15,7 +15,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-          registry-url: "https://registry.npmjs.org"
+          registry-url: 'https://registry.npmjs.org'
       - run: npm install -g npm@latest # >= 11.5.1 for OIDC
       - run: pnpm install --frozen-lockfile
       - run: node scripts/set-version.mjs "${GITHUB_REF_NAME#v}"

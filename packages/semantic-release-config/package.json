@@ -2,13 +2,24 @@
   "name": "@rozomod/semantic-release-config",
   "version": "0.0.0",
   "description": "Shared semantic-release config for rozomod app presets (no npm publish).",
-  "type": "module",
   "license": "MIT",
-  "publishConfig": { "access": "public" },
-  "repository": { "type": "git", "url": "git+https://github.com/rozomod/kalpam.git", "directory": "packages/semantic-release-config" },
-  "exports": { ".": "./index.js", "./package.json": "./package.json" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rozomod/kalpam.git",
+    "directory": "packages/semantic-release-config"
+  },
+  "files": [
+    "index.js"
+  ],
+  "type": "module",
   "main": "./index.js",
-  "files": ["index.js"],
+  "exports": {
+    ".": "./index.js",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/commit-analyzer": "^13.0.1",
@@ -17,5 +28,7 @@
     "@semantic-release/release-notes-generator": "^14.1.1",
     "conventional-changelog-conventionalcommits": "^9.3.1"
   },
-  "peerDependencies": { "semantic-release": ">=24.0.0" }
+  "peerDependencies": {
+    "semantic-release": ">=24.0.0"
+  }
 }

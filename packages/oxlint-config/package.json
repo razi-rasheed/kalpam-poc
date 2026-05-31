@@ -2,13 +2,35 @@
   "name": "@rozomod/oxlint-config",
   "version": "0.0.0",
   "description": "Shared oxlint config for rozomod projects.",
-  "type": "module",
   "license": "MIT",
-  "publishConfig": { "access": "public" },
-  "repository": { "type": "git", "url": "git+https://github.com/rozomod/kalpam.git", "directory": "packages/oxlint-config" },
-  "exports": { ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" } },
-  "files": ["dist"],
-  "scripts": { "build": "tsc -p tsconfig.json", "clean": "rm -rf dist" },
-  "peerDependencies": { "oxlint": ">=1.63.0" },
-  "devDependencies": { "@rozomod/tsconfig": "workspace:*", "oxlint": "^1.67.0", "typescript": "5.9.2" }
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rozomod/kalpam.git",
+    "directory": "packages/oxlint-config"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "@rozomod/tsconfig": "workspace:*",
+    "oxlint": "^1.67.0",
+    "typescript": "5.9.2"
+  },
+  "peerDependencies": {
+    "oxlint": ">=1.63.0"
+  }
 }

@@ -2,11 +2,24 @@
   "name": "@rozomod/oxfmt-config",
   "version": "0.0.0",
   "description": "Shared oxfmt formatter config for rozomod projects.",
-  "type": "module",
   "license": "MIT",
-  "publishConfig": { "access": "public" },
-  "repository": { "type": "git", "url": "git+https://github.com/rozomod/kalpam.git", "directory": "packages/oxfmt-config" },
-  "exports": { "./oxfmt": "./oxfmt.json", "./package.json": "./package.json" },
-  "files": ["oxfmt.json"],
-  "devDependencies": { "oxfmt": "^0.52.0" }
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rozomod/kalpam.git",
+    "directory": "packages/oxfmt-config"
+  },
+  "files": [
+    "oxfmt.json"
+  ],
+  "type": "module",
+  "exports": {
+    "./oxfmt": "./oxfmt.json",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "oxfmt": "^0.52.0"
+  }
 }

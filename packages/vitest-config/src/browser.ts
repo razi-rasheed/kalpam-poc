@@ -1,4 +1,4 @@
-import { mergeConfig } from "vitest/config";
-import base from "./index.js";
+import { mergeConfig } from 'vitest/config';
+import base from './index.js';
 
-export default mergeConfig(base, { test: { environment: "jsdom" } });
+export default mergeConfig(base, { test: { environment: 'jsdom' } });
