@@ -1,0 +1,53 @@
+name: release
+on:
+  push:
+    branches: [main]
+concurrency:
+  group: release-${{ '{{' }} github.ref {{ '}}' }}
+  cancel-in-progress: false
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    outputs:
+      released: ${{ '{{' }} steps.semrel.outputs.new_release_published {{ '}}' }}
+      tag: ${{ '{{' }} steps.semrel.outputs.new_release_git_tag {{ '}}' }}
+    steps:
+      - uses: actions/checkout@v5
+        with: { fetch-depth: 0 }
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version-file: .nvmrc, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm db:generate
+      - run: pnpm build
+      - id: semrel
+        run: pnpm exec semantic-release
+        env:
+          GITHUB_TOKEN: ${{ '{{' }} secrets.GITHUB_TOKEN {{ '}}' }}
+
+  deploy:
+    needs: release
+    if: needs.release.outputs.released == 'true'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ '{{' }} needs.release.outputs.tag {{ '}}' }}
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version-file: .nvmrc, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm db:generate
+      - run: pnpm build
+      - uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ '{{' }} secrets.CLOUDFLARE_API_TOKEN {{ '}}' }}
+          accountId: ${{ '{{' }} secrets.CLOUDFLARE_ACCOUNT_ID {{ '}}' }}
+          workingDirectory: apps/web
+          preCommands: npx wrangler d1 migrations apply DB --remote
+          command: deploy
